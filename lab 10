@@ -1,0 +1,110 @@
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+    char data[100], divisor[30], temp[140], codeword[140];
+    int n, m, i, j, error = 0;
+
+    printf("Enter data bits: ");
+    scanf("%99s", data);
+
+    printf("Enter generator bits (e.g. 1011): ");
+    scanf("%29s", divisor);
+
+    n = (int)strlen(data);
+    m = (int)strlen(divisor);
+
+    if (m < 2 || m > n + 1 || divisor[0] != '1')
+    {
+        printf("Invalid generator or generator length.\n");
+        return 1;
+    }
+
+    /* Validate data bits */
+    for (i = 0; i < n; i++)
+    {
+        if (data[i] != '0' && data[i] != '1')
+        {
+            printf("Data must contain only 0 and 1.\n");
+            return 1;
+        }
+    }
+
+    /* Validate generator bits */
+    for (i = 0; i < m; i++)
+    {
+        if (divisor[i] != '0' && divisor[i] != '1')
+        {
+            printf("Generator must contain only 0 and 1.\n");
+            return 1;
+        }
+    }
+
+    /* Append zeros to data */
+    strcpy(temp, data);
+
+    for (i = 0; i < m - 1; i++)
+    {
+        temp[n + i] = '0';
+    }
+
+    temp[n + m - 1] = '\0';
+
+    /* Calculate CRC remainder */
+    for (i = 0; i < n; i++)
+    {
+        if (temp[i] == '1')
+        {
+            for (j = 0; j < m; j++)
+            {
+                temp[i + j] =
+                    (temp[i + j] == divisor[j]) ? '0' : '1';
+            }
+        }
+    }
+
+    /* Generate codeword */
+    strcpy(codeword, data);
+    strncat(codeword, temp + n, m - 1);
+
+    printf("\nOriginal data : %s\n", data);
+    printf("Generator     : %s\n", divisor);
+    printf("CRC remainder : %.*s\n", m - 1, temp + n);
+    printf("Codeword      : %s\n", codeword);
+
+    /* Receiver verification */
+    strcpy(temp, codeword);
+
+    for (i = 0; i < n; i++)
+    {
+        if (temp[i] == '1')
+        {
+            for (j = 0; j < m; j++)
+            {
+                temp[i + j] =
+                    (temp[i + j] == divisor[j]) ? '0' : '1';
+            }
+        }
+    }
+
+    /* Check remainder */
+    for (i = n; i < n + m - 1; i++)
+    {
+        if (temp[i] != '0')
+        {
+            error = 1;
+            break;
+        }
+    }
+
+    if (error)
+        printf("Receiver: Error detected.\n");
+    else
+        printf("Receiver: No error detected by CRC.\n");
+
+    return 0;
+}
+
+

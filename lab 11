@@ -1,0 +1,54 @@
+
+#include <stdio.h>
+
+int main(void)
+{
+    int total, window, base = 0, i, end;
+
+    printf("Enter total number of frames: ");
+    if (scanf("%d", &total) != 1)
+        return 1;
+
+    printf("Enter window size: ");
+    if (scanf("%d", &window) != 1)
+        return 1;
+
+    if (total <= 0 || window <= 0)
+    {
+        printf("Enter positive values only.\n");
+        return 1;
+    }
+
+    printf("\nSliding Window Protocol Simulation\n");
+
+    while (base < total)
+    {
+        end = base + window;
+
+        if (end > total)
+            end = total;
+
+        printf("\nSender window: frames %d to %d\n",
+               base, end - 1);
+
+        for (i = base; i < end; i++)
+        {
+            printf("Sender: Sending frame %d\n", i);
+        }
+
+        for (i = base; i < end; i++)
+        {
+            printf("Receiver: Frame %d received\n", i);
+            printf("Receiver: ACK %d sent\n", i);
+        }
+
+        base = end;
+
+        printf("Sender: Window moved forward\n");
+    }
+
+    printf("\nAll frames sent and acknowledged.\n");
+
+    return 0;
+}
+
